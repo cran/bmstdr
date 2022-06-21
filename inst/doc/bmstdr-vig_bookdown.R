@@ -3,11 +3,9 @@
 
 ## ---- include = FALSE---------------------------------------------------------
 knitr::opts_chunk$set(
-  # tidy.opts = list(width.cutoff = 60), 
-  # tidy = TRUE, 
-   collapse = TRUE,
-   class.source="watch-out",
-   comment = "#>")
+  collapse = TRUE,
+  class.source="watch-out",
+  comment = "#>")
 
 ## ----setup,  eval=TRUE, echo=FALSE, include=FALSE-----------------------------
 library(bmstdr)
@@ -16,8 +14,8 @@ require(ggsn)
 library(tidyr)
 library(huxtable)
 library(RColorBrewer)
-library(akima)
-knitr::opts_chunk$set(eval = F)
+library(interp)
+knitr::opts_chunk$set(eval = FALSE)
 
 
 tabs <- lapply(list.files(system.file('txttables', package = 'bmstdr'), full.names = TRUE), dget)
@@ -34,7 +32,7 @@ print(table4.2)
 print(table4.3)
 
 
-figpath <- system.file("figs", package = "bmstdr") 
+figpath <- system.file("figures", package = "bmstdr") 
 print(figpath)
 
 table1 <-  tabs[[1]]
@@ -48,9 +46,9 @@ table6 <- tabs[[8]]
 table7 <- tabs[[9]]
 table8 <- tabs[[10]]
 table9 <- tabs[[11]]
-colpalette <- c("dodgerblue4",  "dodgerblue2",  "firebrick2",   "firebrick4",   "purple")     
+# colpalette <- c("dodgerblue4",  "dodgerblue2",  "firebrick2",   "firebrick4",   "purple")     
 
-## ----vsites3, echo=FALSE, eval=TRUE, fig.cap="25 fitted sites and 3 validation sites (numbered) in  New York", fig.width=6, fig.height=5----
+## ----vsites3, echo=FALSE, eval=TRUE, fig.cap="25 fitted sites and 3 validation sites (numbered) in  New York", fig.width=6, fig.height=4----
 nymap <- map_data(database="state",regions="new york")
 s <- c(1, 5, 10)
 fcoords <- nyspatial[-s, c("Longitude", "Latitude")]
@@ -84,7 +82,7 @@ vsites3
 #        coordtype="utm", coords=4:5, phi=0.4, mchoice=T)
 
 ## ---- echo=TRUE, eval=FALSE---------------------------------------------------
-#  asave <- phichoice_sp(formula=yo3~xmaxtemp+xwdsp+xrh, data=nyspatial, coordtype="utm", coords=4:5, phis=seq(from=0.1, to=1, by=0.1), scale.transform="NONE", s=c(8,11,12,14,18,21,24,28), N=2000, burn.in=1000)
+#  asave <- phichoice_sp()
 #  asave
 
 ## ---- echo=TRUE, eval=FALSE---------------------------------------------------
@@ -172,7 +170,7 @@ s4 <- u[22:28]
    set_caption('(#tab:m2-4-fold-validnyspatial) 4-fold cross-validation statistics for model M2 fitted to the nyspatial data set.')
 
 
-## ----valplot1, echo=T, eval=T, message=FALSE, results='hide', fig.cap="Prediction against observation plot with the prediction intervals included. The `in/out' symbol in the plot indicates whether or not a prediction interval includes the 45 degree line.", fig.height=5, fig.width=6----
+## ----valplot1, echo=T, eval=T, message=FALSE, results='hide', fig.cap="Prediction against observation plot with the prediction intervals included. The `in/out' symbol in the plot indicates whether or not a prediction interval incudes the 45 degree line."----
 M2.v3 <- Bspatial(model="spat", formula=yo3~xmaxtemp+xwdsp+xrh, data=nyspatial, 
                coordtype="utm", coords=4:5, validrows= s3, phi=0.4, verbose = FALSE)
 
@@ -188,7 +186,7 @@ M1 <- Bsptime(model="lm", formula=f2, data=nysptime, scale.transform = "SQRT")
 M2 <- Bsptime(model="separable", formula=f2, data=nysptime, scale.transform = "SQRT",
               coordtype="utm", coords=4:5)
 
-## ----residM2, echo=TRUE, eval=TRUE, fig.width=7, fig.height=5, fig.cap="A multiple time series plot of residuals"----
+## ----residM2, echo=TRUE, eval=TRUE, fig.cap="A multiple time series plot of residuals"----
 a <- residuals(M2)
 
 ## ---- echo=TRUE, eval=FALSE, message=FALSE, results='hide'--------------------
@@ -196,11 +194,6 @@ a <- residuals(M2)
 
 ## ---- echo=TRUE, eval=FALSE---------------------------------------------------
 #  M2$phi.s; M2$phi.t
-
-## ---- echo=TRUE, eval=FALSE---------------------------------------------------
-#  asave <- phichoicep(formula=y8hrmax ~ xmaxtemp+xwdsp+xrh, data=nysptime,
-#                  coordtype="utm", coords=4:5, scale.transform = "SQRT",  phis=c(0.001,  0.005, 0.025, 0.125, 0.625), phit=c(0.05, 0.25, 1.25, 6.25),
-#  valids=c(8,11,12,14,18,21,24,28), N=2000, burn.in=1000)
 
 ## ----valplot21, echo=TRUE, eval=TRUE, message=FALSE, results='hide', fig.show='hide'----
 valids <-  c(1, 5, 10)
@@ -245,7 +238,7 @@ y.valids.low <- matrix(fitvalid$low, byrow=T, ncol=tn)
 y.valids.med <- matrix(fitvalid$Mean, byrow=T, ncol=tn)
 y.valids.up <- matrix(fitvalid$up, byrow=T, ncol=tn)
 
-## ----valid3sites, echo=T, eval=T, fig.height=8, fig.width=7, fig.cap="Time series of observed and predicted values at three sites."----
+## ----valid3sites, echo=T, eval=T, fig.height=8, fig.cap="Time series of observed and predicted values at three sites."----
 p1 <- fig11.13.plot(yobs[1, ], y.valids.low[1, ], y.valids.med[1, ], 
                     y.valids.up[1, ], misst=validt)
 p1 <- p1 + ggtitle("Validation for Site 1")
@@ -292,7 +285,7 @@ b <- rbind(b, fits)
 
 ## ---- echo=TRUE, eval=TRUE, message=FALSE, results='hide'---------------------
 coord <- nyspatial[, c("Longitude","Latitude")]
-library(akima)
+library(interp)
 xo <- seq(from=min(coord$Longitude)-0.5, to = max(coord$Longitude)+0.8, length=200)
 yo <- seq(from=min(coord$Latitude)-0.25, to = max(coord$Latitude)+0.8, length=200)
 surf <- interp(b$Longitude, b$Latitude, b$mean,  xo=xo, yo=yo)
@@ -391,7 +384,7 @@ f3 <- y8hrmax~ xmaxtemp + sp(xmaxtemp)+ tp(xwdsp) + xrh
 M7 <- Bsptime(package="sptDyn", model="GP", formula=f3, data=nysptime, 
       coordtype="utm", coords=4:5, scale.transform = "SQRT", n.report=2)
 
-## ----speffects,  echo=TRUE, eval=TRUE, message=FALSE,  fig.cap="Spatial effects of maximum temperature from model M7", fig.height=5, fig.width=7----
+## ----speffects,  echo=TRUE, eval=TRUE, message=FALSE,  fig.cap="Spatial effects of maximum temperature from model M7"----
 out <- M7$fit
 dim(out$betasp)
 a <- out$betasp
@@ -407,7 +400,7 @@ p <- ggplot(data=d, aes(x=site, y=sp)) +
    labs(title= "Spatial effects of maximum temperature", x="Site", y = "Effects", size=2.5) 
 p 
 
-## ----temporaleffects, echo=TRUE, eval=TRUE, message=FALSE, fig.cap="Temporal effects  of wind speed from model M7", fig.height=5, fig.width=7----
+## ----temporaleffects, echo=TRUE, eval=TRUE, message=FALSE, fig.cap="Temporal effects  of wind speed from model M7"----
 b <- out$betatp
 tn <- nrow(b)
 itmax <- ncol(b)
@@ -479,7 +472,7 @@ prange <- ggplot() +
    labs(y = "Range", x = "Days") 
 # prange
 
-## ----spBayesplots, echo=FALSE, eval=TRUE, fig.cap="Parameter estimates for the spBayes fitted spatio-temporal model M8", fig.height=10, fig.width=7----
+## ----spBayesplots, echo=FALSE, eval=TRUE, fig.cap="Parameter estimates for the spBayes fitted spatio-temporal model M8"----
 ggarrange(psigma, ptau, prange, common.legend = TRUE, legend = "none", nrow = 3, ncol = 1)
 
 ## ---- echo=TRUE, eval=FALSE, message=FALSE, results='hide'--------------------
@@ -500,7 +493,7 @@ ggarrange(psigma, ptau, prange, common.legend = TRUE, legend = "none", nrow = 3,
    style_headers(bold = TRUE, text_color = "red") %>% 
    set_caption('(#tab:modv-m1-m9) Model choice and validation statistics for the eight models.')
 
-## ----atllocationsdeep, echo=T, eval=T, fig.height=5, fig.width = 7, fig.cap="Locations of moving Argo floats in the deep ocean in 2003."----
+## ----atllocationsdeep, echo=T, eval=T, fig.cap="Locations of moving Argo floats in the deep ocean in 2003."----
 atlmap <- map_data("world", xlim=c(-70, 10), ylim=c(15, 65))
 atlmap <- atlmap[atlmap$long < 5, ]
 atlmap <- atlmap[atlmap$long > -70, ]
@@ -660,7 +653,7 @@ f2 <- temp ~ xlon + xlat + xlat2+ xinter + x2inter
 ## ----oceanplot, eval=TRUE, echo=FALSE, fig.height=6, fig.cap="A map of predicted temperatures in the   deep ocean in 2003", out.width = '90%'----
 knitr::include_graphics(paste0(figpath, "/temp_deep.png"))
 
-## ----ptime, echo=T, eval=T, fig.width=7, fig.height=5,  fig.cap="Weekly Covid-19 death rate per 100,000"----
+## ----ptime, echo=T, eval=T, fig.cap="Weekly Covid-19 death rate per 100,000"----
 engdeaths$covidrate <- 100000*engdeaths$covid/engdeaths$popn
 ptime <- ggplot(data=engdeaths,  aes(x=factor(Weeknumber), y=covidrate)) +
   geom_boxplot() +
@@ -833,17 +826,17 @@ table4.2 %>%
 #  burn.in=burn.in.car, thin=thin)
 
 ## ---- echo=FALSE, eval=TRUE---------------------------------------------------
-  table8 %>%
-  as_hux(add_colnames = FALSE) %>%
-  set_number_format(2)     %>%
-  map_text_color(by_cols("darkred", "blue", "darkgreen")) %>%
-  add_colnames("Model") %>%
-  set_header_rows(1, TRUE) %>% 
-  add_rownames() %>%
-  set_all_borders(1)  %>%
-  set_bold(1, everywhere) %>% 
-  style_headers(bold = TRUE, text_color = "red") %>% 
-  set_caption('(#tab:m1st) Model choice criteria values for various spatio-temporal binomial model.')
+   table8 %>%
+   as_hux(add_colnames = FALSE) %>%
+   set_number_format(2)     %>%
+   map_text_color(by_cols("darkred", "blue", "darkgreen")) %>%
+   add_colnames("Model") %>%
+   set_header_rows(1, TRUE) %>% 
+   add_rownames() %>%
+   set_all_borders(1)  %>%
+   set_bold(1, everywhere) %>% 
+   style_headers(bold = TRUE, text_color = "red") %>% 
+   set_caption('(#tab:m1st) Model choice criteria values for various spatio-temporal binomial model.')
 
 ## ---- echo=TRUE, eval=FALSE---------------------------------------------------
 #  f2 <-  covid ~ offset(logEdeaths) + jsa + log10(houseprice) + log(popdensity) + n0 + n1 + n2 + n3
@@ -907,10 +900,10 @@ table4.2 %>%
 #  ar2valid <- b$pwithseg
 #  library(ggpubr)
 #  ggarrange(ar2valid, inlavalid, common.legend = TRUE, legend = "top", nrow = 2, ncol = 1)
-#  ggsave(filename = paste0(figpath, "/inlavAR2.png"))
+#  ggsave(filename = paste0(figpath, "/figure11.png"))
 
-## ----obsvpredplot, echo=FALSE, eval=TRUE, fig.cap="Predictions with 95% limits against observations for two models: AR (2) on the left panel and INLA on the right panel", out.width = '90%'----
-knitr::include_graphics(paste0(figpath, "/inlavAR2.png"))
+## ----obsvpredplot, echo=FALSE, eval=TRUE, fig.cap="Predictions with 95% limits against observations for two models: AR (2) on the left panel and INLA on the right panel", fig.width=6----
+knitr::include_graphics(paste0(figpath, "/figure11.png"))
 
 ## ---- echo=T, eval=FALSE------------------------------------------------------
 #  M3st <- Bcartime(formula=f3, data=engdeaths, scol=scol, tcol=tcol,

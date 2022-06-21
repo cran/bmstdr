@@ -275,6 +275,9 @@ A list containing:
    the number of retained 
    MCMC samples. This is present only if model validation has 
    been performed.  
+   \item validationplots - Present only if validation has been performed. 
+   Contains three validation plots with or without segment and 
+   an ordinary plot.  See \code{\link{obs_v_pred_plot}} for more. 
    \item residuals   -   A vector of residual values.  
    \item sn   -   The number of data locations used in fitting.  
    \item tn   -   The number of time points used in fitting. 
@@ -432,14 +435,14 @@ M9 <- Bsptime(package = "spTimer", model = "GPP", g_size = 5, formula = f2,
     N = N, burn.in = burn.in, n.report = n.report)
 summary(M9)
 
-# Takes a long time to fit spatio-temporal models using INLA
-if (require(INLA)) {
+# This INLA run may take a long time
+if (require(INLA) & require(inlabru)) {
     f2 <- y8hrmax ~ xmaxtemp + xwdsp + xrh
     M6 <- Bsptime(package = "inla", model = "AR", formula = f2, data = nysptime,
         coordtype = "utm", coords = 4:5, scale.transform = "SQRT", 
         offset = c(100, 200), max.edge = c(500, 10000),
         mchoice = TRUE, plotit=TRUE)
-    # Takes 5 minutes
+    # Takes a minute
     summary(M6)
 }
 }
