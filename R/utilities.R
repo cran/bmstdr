@@ -19,9 +19,27 @@
 #' @useDynLib bmstdr
 NULL
 #if(getRversion() >= "2.15.1")  utils::globalVariables(c("."), add=FALSE)
-utils::globalVariables(c("nyspatial", "nysptime",  "ydata", "fitvals", "residvals", "up", "low"))
+utils::globalVariables(c("nyspatial", "nysptime",  "ydata", "fitvals", "residvals", "up", "low", "Ntrials"))
 utils::globalVariables(c("distance", "variogram", "preds", "inornot", "Time", "s.index", "x", "y", "f2"))
 NULL
+
+.onLoad <-
+  function(libname, pkgname)
+  {
+    library.dynam(pkgname, pkgname, lib.loc=libname)
+  }
+
+
+.onAttach <-
+  function(libname, pkgname)
+  {
+    ## figureout the version automatically
+    library(help=bmstdr)$info[[1]] -> version
+    version <- version[pmatch("Version",version)]
+    um <- strsplit(version," ")[[1]]
+    version <- um[nchar(um)>0][2]
+    packageStartupMessage("\n## bmstdr version: ", version," \n")
+  }
 
 #' Observed against predicted plot 
 #' @param yobs A vector containing the actual observations 
@@ -33,6 +51,7 @@ NULL
 #' @param segments Logical: whether to draw line segments for the prediction intervals. 
 #' @param summarystat Can take one of two values "median" (default) or "mean" 
 #' indicating which one to use for the plot.   
+#' @param plotit  Logical scalar value: whether to plot the predictions against the observed values.
 #' @return Draws a plot only after removing the missing observations.  It also returns a list of two ggplot2 
 #' objects: (i) a plot with intervals drawn \code{pwithseg} and (ii) a plot without the segments drawn: 
 #' \code{pwithoutseg} and (iii) a simple plot not showing the range of the prediction intervals.    
@@ -47,7 +66,7 @@ NULL
 #' plot(oplots$pwithoutseg)
 #' plot(oplots$pwithseg)
 #' @export
-obs_v_pred_plot <- function(yobs, predsums, segments=TRUE, summarystat="median") {
+obs_v_pred_plot <- function(yobs, predsums, segments=TRUE, summarystat="median", plotit=TRUE) {
 ## yobs is r by 1
 ## predsums is r by 4 data frame where the four columns are mean, sd, up and low
 #
@@ -114,8 +133,10 @@ obs_v_pred_plot <- function(yobs, predsums, segments=TRUE, summarystat="median")
   p3 <- p2 + geom_segment(data=adat, aes(x=yobs, y=preds, xend=yobs, yend=up), col=adat$cols,  linetype=1, arrow=arrow) +
     geom_segment(data=adat, aes(x=yobs, y=preds, xend=yobs, yend=low), col=adat$cols, linetype=1, arrow=arrow) 
   if (segments) { 
-    plot(p3)    
-  } else plot(p2)
+    if (plotit) plot(p3)    
+  } else { 
+    if (plotit) plot(p2)
+  }
  return(list(pwithseg=p3, pwithoutseg=p2, pordinary=p1))
 }
 #'  Obtains parameter estimates from MCMC samples 
