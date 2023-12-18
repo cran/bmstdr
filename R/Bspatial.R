@@ -12,13 +12,14 @@
 #' @param package Which package is to be used in model fitting? Currently available 
 #' packages are:
 #' \itemize{  
-#' \item{"spBayes" }{The model implemented is the marginal model with 
-#' nugget effect using the \code{spLM} function.}  
-#' \item{"stan" }{The model implemented is the full spatial random effect model 
-#' with nugget effect where the decay parameter has been assumed to be fixed. }
-#' \item{"inla" }{The model fitted is the spatial random effect model with the nugget effect.}
-#' \item{"none". } {In this case case, the argument  \code{model} must be 
-#' specified either as "lm" or "spat". See below}
+#' \item "spBayes": The model implemented is the marginal model with 
+#' nugget effect using the \code{spLM} function.  
+#' \item "stan": The model implemented is the full spatial random effect model 
+#' with nugget effect where the decay parameter has been assumed to be fixed. 
+#' \item "inla": The model fitted is the spatial random effect model with the 
+#' nugget effect.
+#' \item "none":  In this case case, the argument  \code{model} must be 
+#' specified either as "lm" or "spat". See below.
 #' }
 #'  Further details and more examples are provided in Chapter 6 of the book 
 #' \insertCite{Sahubook;textual}{bmstdr}.
@@ -240,8 +241,8 @@ Bspatial <- function(formula, # =yo3~xmaxtemp+xwdsp+xrh,
                            offset = offset, max.edge=max.edge,  
                            N=N, burn.in=burn.in, rseed=rseed,  plotit=plotit)
     } else { 
-      cat("Implemented packages are none,", implemented, "\n")
-      cat("\n If package is none then the implemented models are lm and spat\n")
+      message("Implemented packages are none,", implemented, "\n")
+      message("\n If package is none then the implemented models are lm and spat\n")
       stop("But, sorry, the package or model opted for has not been implemented yet!")
     } 
  
