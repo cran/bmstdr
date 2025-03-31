@@ -237,26 +237,29 @@ message("\n Note that the residuals are provided on the transformed scale. Pleas
  }
  a 
 } 
-## Extract residuals from a bmstdr  fitted object. 
-## @param x A bmstdr model fit object. 
-## ## @seealso \link{\code{print}} for basic information regarding the fitted model, 
-## ## \link{\code{summary}} for summaries of model fitting,  
-## ## \link{\code{fitted}} for extracting the fitted values, 
-## ## \link{\code{plot}} for plotting.  
-# ## @method resid bmstdr
-resid.bmstdr <- function(x)
+#' Extract residuals from a bmstdr  fitted object. 
+#' @param object A bmstdr model fit object. 
+#' @param ... Any other additional arguments. 
+## #' @seealso \link{\code{print}} for basic information regarding the fitted model, 
+## #' \link{\code{summary}} for summaries of model fitting,  
+## #' \link{\code{fitted}} for extracting the fitted values, 
+## #' \link{\code{plot}} for plotting. 
+#' @method resid bmstdr
+#' @rdname resid.bmstdr 
+#' @export
+resid.bmstdr <- function(object, ...)
 {
- if (x$scale.transform !="NONE") {  
+ if (object$scale.transform !="NONE") {  
     message("\n Note that the residuals are provided on the transformed scale. 
     See the scale.transform argument.\n")
  }  
-  if (exists("stats", x)) { 
+  if (exists("stats", object)) { 
    message("Validation has been performed.\n")
    message("The residuals include the validation observations as well. 
     Expect the return value to be of the same length as the supplied data frame. \n")
  }
   
-  a <- x$residuals
+  a <- object$residuals
   message("\nSummary of the residuals\n")
   print(summary(a))
   a 
